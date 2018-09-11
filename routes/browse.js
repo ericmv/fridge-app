@@ -16,7 +16,7 @@ const browseCategory = (db, user, category, callback) => {
   .then(res => {
     const fridge_id = res.fridge;
     let categoryresults = db.collection('fridges').aggregate([{$match: {_id:fridge_id}},
-    {$project: {fridge_contents:{$filter:{input: '$fridge_contents', as:'contents',
+    {$project: {contents:{$filter:{input: '$contents', as:'contents',
     cond:{$eq: ['$$contents.category',category]}}},_id:0}}]).toArray((err, results) => {
       assert.equal(null, err);
       callback(results);
@@ -30,7 +30,7 @@ const browseUser = (db, user, callback) => {
   .then(res => {
     const fridge_id = res.fridge;
     let categoryresults = db.collection('fridges').aggregate([{$match: {_id:fridge_id}},
-    {$project: {fridge_contents:{$filter:{input: '$fridge_contents', as:'contents',
+    {$project: {contents:{$filter:{input: '$contents', as:'contents',
     cond:{$eq: ['$$contents.owner_id',user_id]}}},_id:0}}]).toArray((err, results) => {
       assert.equal(null, err);
       callback(results);
