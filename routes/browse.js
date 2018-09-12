@@ -39,9 +39,9 @@ const browseUser = (db, user, callback) => {
 }
 
 /* GET users listing. */
-router.get('/category', function(req, res, next) {
-  const category = req.query.category;
-  const user = req.query.user;
+router.post('/category', function(req, res, next) {
+  const category = req.body.category;
+  const user = req.body.user;
   MongoClient.connect(url, (err, client) => {
     assert.equal(null, err);
     console.log("Connected successfully to server");
@@ -50,15 +50,15 @@ router.get('/category', function(req, res, next) {
     let r = browseCategory(db, user, category, (results) => {
       client.close();
       console.log(results);
-      res.send(results[0]['fridge_contents']);
+      res.send(results[0]['contents']);
     })
   });
 
 
 });
 
-router.get('/user', function(req, res, next) {
-  const user = req.query.user;
+router.post('/user', function(req, res, next) {
+  const user = req.body.user;
   MongoClient.connect(url, (err, client) => {
     assert.equal(null, err);
     console.log("Connected successfully to server");
