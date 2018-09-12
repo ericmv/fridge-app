@@ -40,9 +40,10 @@ const validateUser = (db, user, password, callback) => {
   })
 }
 
-const validateSession = (db, session, user, callback) => {
-  let users = db.collection('users').findOne({_id: session}, (err, res) => {
+const validateSession = (db, session_id, callback) => {
+  let session = db.collection('sessions').findOne({_id: session_id}, (err, res) => {
     assert.equal(null, err);
+    console.log(res)
     callback(res);
   })
 }
@@ -52,7 +53,7 @@ const validateSession = (db, session, user, callback) => {
 /* GET users listing. */
 router.post('/login', function(req, res, next) {
 
-  const user = req.body.username;
+  const user = req.body.user;
   const password = req.body.password;
 
   MongoClient.connect(url, (err, client) => {
@@ -77,7 +78,7 @@ router.post('/validateSession', function(req, res, next) {
     console.log("Connected successfully to server");
 
     const db = client.db(dbName);
-    let r = validateSession(db, session, user, (results) => {
+    let r = validateSession(db, session, (results) => {
       client.close();
       console.log(results);
       res.json(results);
