@@ -5,12 +5,15 @@ const MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID
 const assert = require('assert');
 
-const url = 'mongodb://localhost:27017'
+// const url = 'mongodb://localhost:27017'
+const url = 'mongodb+srv://ericvu:dhdkmvl5@eric-dev-cluster-zlepn.mongodb.net/fridgedb?retryWrites=true'
+
 
 const dbName = 'fridgedb'
 
 const insertItem = (db, user, category, name, qty, unit, exp, callback) => {
   const user_id = ObjectID(user);
+  console.log("USERID", user_id)
   let user_cursor = db.collection('users').findOne({_id: ObjectID(user)})
   .then(res => {
     const fridge_id = res.fridge;
@@ -21,6 +24,7 @@ const insertItem = (db, user, category, name, qty, unit, exp, callback) => {
       unit: unit,
       exp: exp,
       owner_id: res._id,
+      owner_name: res.first_name,
       item_id: new ObjectID()
     }
     let categoryresults = db.collection('fridges').updateOne({_id: fridge_id}, {$push: {contents: item}});

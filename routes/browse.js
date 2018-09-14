@@ -5,7 +5,8 @@ const MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID
 const assert = require('assert');
 
-const url = 'mongodb://localhost:27017'
+// const url = 'mongodb://localhost:27017'
+const url = 'mongodb+srv://ericvu:dhdkmvl5@eric-dev-cluster-zlepn.mongodb.net/fridgedb?retryWrites=true'
 
 const dbName = 'fridgedb'
 
