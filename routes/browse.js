@@ -13,7 +13,7 @@ const dbName = 'fridgedb'
 
 const browseCategory = (db, user, category, callback) => {
   const user_id = ObjectID(user);
-  let user_cursor = db.collection('users').findOne({_id: ObjectID(user)})
+  let user_cursor = db.collection('users').findOne({_id: user_id})
   .then(res => {
     const fridge_id = res.fridge;
     let categoryresults = db.collection('fridges').aggregate([{$match: {_id:fridge_id}},
@@ -36,6 +36,24 @@ const browseUser = (db, user, callback) => {
       assert.equal(null, err);
       callback(results);
     });
+  })
+}
+
+const getOwners = (db, id, callback) => {
+  const fridge_id = ObjectID(id);
+  let categoryresults = db.collection('fridges').findOne({_id: fridge_id}, {fields: {_id: 0, owners: 1}}, (err, res) => {
+    assert.equal(null, err);
+    callback(res.owners);
+
+  })
+}
+
+const browseAll = (db, fridge, callback) => {
+  const fridge_id = ObjectID(fridge);
+  let categoryresults = db.collection('fridges').findOne({_id: fridge_id}, {fields: {_id: 0, contents: 1}}, (err, res) => {
+    assert.equal(null, err);
+    callback(res.contents);
+
   })
 }
 
@@ -68,7 +86,41 @@ router.post('/user', function(req, res, next) {
     let r = browseUser(db, user, (results) => {
       client.close();
       console.log(results);
-      res.send(results[0]['fridge_contents']);
+      res.send(results[0]['contents']);
+    })
+  });
+
+
+});
+
+router.post('/owners', function(req, res, next) {
+  const id = req.body.id;
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = getOwners(db, id, (results) => {
+      client.close();
+      console.log(results);
+      res.send(results);
+    })
+  });
+
+
+});
+
+router.post('/all', function(req, res, next) {
+  const fridge = req.body.fridge;
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = browseAll(db, fridge, (results) => {
+      client.close();
+      console.log(results);
+      res.send(results);
     })
   });
 

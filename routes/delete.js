@@ -12,7 +12,10 @@ const url = 'mongodb+srv://ericvu:dhdkmvl5@eric-dev-cluster-zlepn.mongodb.net/fr
 const dbName = 'fridgedb'
 
 const deleteItem = (db, item, callback) => {
-  let categoryresults = db.collection('fridges').updateOne({}, {$pull: {contents: {item_id: item}}});
+  let categoryresults = db.collection('fridges').updateOne({}, {$pull: {contents: {item_id: ObjectID(item)}}}, (err, res) => {
+    assert.equal(null, err);
+    console.log(res);
+  });
   callback("success");
 }
 
