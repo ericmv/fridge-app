@@ -11,6 +11,7 @@ var insertRouter = require('./routes/insert');
 var updateRouter = require('./routes/update');
 var deleteRouter = require('./routes/delete');
 var ownersRouter = require('./routes/fridgeOwners');
+var notificationsRouter = require('./routes/notifications');
 var app = express();
 
 
@@ -31,7 +32,7 @@ app.use('/insert', insertRouter);
 app.use('/update', updateRouter);
 app.use('/delete', deleteRouter);
 app.use('/fridgeOwners', ownersRouter);
-
+app.use('/notifications', notificationsRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

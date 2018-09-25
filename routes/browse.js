@@ -39,6 +39,7 @@ const browseUser = (db, user, callback) => {
   })
 }
 
+
 const getOwners = (db, id, callback) => {
   const fridge_id = ObjectID(id);
   let categoryresults = db.collection('fridges').findOne({_id: fridge_id}, {fields: {_id: 0, owners: 1}}, (err, res) => {
