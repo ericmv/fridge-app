@@ -50,7 +50,12 @@ const validateSession = (db, session_id, callback) => {
   })
 }
 
-
+const logout = (db, session_id, callback) => {
+  let status = db.collection('sessions').deleteOne({_id: session_id}, (err,res) => {
+    assert.equal(null, err);
+    callback(res);
+  })
+}
 
 /* GET users listing. */
 router.post('/login', function(req, res, next) {
@@ -83,6 +88,22 @@ router.post('/validateSession', function(req, res, next) {
     let r = validateSession(db, session, (results) => {
       client.close();
       console.log(results);
+      res.json(results);
+    })
+  });
+});
+
+router.post('/logout', function(req, res, next) {
+
+  const session = req.body.session;
+
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = logout(db, session, (results) => {
+      client.close();
       res.json(results);
     })
   });
