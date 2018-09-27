@@ -33,10 +33,17 @@ const generateSession = (db, user, fridge, callback) => {
 
 }
 
-const validateUser = (db, user, password, callback) => {
-  console.log(user);
+const registerUser = (db, email, password, callback) => {
+  let users = db.collection('users').findOne({email: email}, (err, res) => {
+    console.log(res)
+    callback("AYO")
+  })
+}
+
+const validateUser = (db, email, password, callback) => {
+  console.log(email);
   console.log(password);
-  let users = db.collection('users').findOne({username: user, password: password}, (err, res) => {
+  let users = db.collection('users').findOne({email: email, password: password}, (err, res) => {
     assert.equal(null, err);
     generateSession(db, res._id, res.fridge, callback);
   })
@@ -64,10 +71,18 @@ const info = (db, id, callback) => {
   })
 }
 
-/* GET users listing. */
-router.post('/login', function(req, res, next) {
+const update = (db, id, info, callback) => {
+  const fields = info;
+  let status = db.collection('users').updateOne({_id: ObjectID(id)}, fields, (err,res) => {
+    assert.equal(null, err);
+    callback(res);
+  })
+}
 
-  const user = req.body.user;
+/* GET users listing. */
+router.post('/register', function(req, res, next) {
+
+  const email = req.body.email;
   const password = req.body.password;
 
   MongoClient.connect(url, (err, client) => {
@@ -75,7 +90,25 @@ router.post('/login', function(req, res, next) {
     console.log("Connected successfully to server");
 
     const db = client.db(dbName);
-    let r = validateUser(db, user, password, (results) => {
+    let r = registerUser(db, email, password, (results) => {
+      client.close();
+      console.log(results);
+      res.send(results);
+    })
+  });
+});
+
+router.post('/login', function(req, res, next) {
+
+  const email = req.body.email;
+  const password = req.body.password;
+
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = validateUser(db, email, password, (results) => {
       client.close();
       console.log(results);
       res.json(results);
@@ -126,6 +159,22 @@ router.post('/info', function(req, res, next) {
 
     const db = client.db(dbName);
     let r = info(db, id, (results) => {
+      client.close();
+      res.json(results);
+    })
+  });
+});
+
+router.post('/update', function(req, res, next) {
+
+  const info = req.body.info;
+
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = update(db, info, (results) => {
       client.close();
       res.json(results);
     })
