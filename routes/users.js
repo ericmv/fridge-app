@@ -57,6 +57,13 @@ const logout = (db, session_id, callback) => {
   })
 }
 
+const info = (db, id, callback) => {
+  let status = db.collection('users').findOne({_id: ObjectID(id)}, (err,res) => {
+    assert.equal(null, err);
+    callback(res);
+  })
+}
+
 /* GET users listing. */
 router.post('/login', function(req, res, next) {
 
@@ -103,6 +110,22 @@ router.post('/logout', function(req, res, next) {
 
     const db = client.db(dbName);
     let r = logout(db, session, (results) => {
+      client.close();
+      res.json(results);
+    })
+  });
+});
+
+router.post('/info', function(req, res, next) {
+
+  const id = req.body.id;
+
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = info(db, id, (results) => {
       client.close();
       res.json(results);
     })
