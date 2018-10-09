@@ -23,6 +23,7 @@ const generateSession = (db, user, fridge, callback) => {
     }
     db.collection('sessions').insertOne(session)
     .then((res) => {
+      console.log("hallelujah")
       callback(session)
     })
     .catch((err) => {
@@ -33,10 +34,26 @@ const generateSession = (db, user, fridge, callback) => {
 
 }
 
-const registerUser = (db, email, password, callback) => {
+const registerUser = (db, email, password, username, first_name, last_name, callback) => {
   let users = db.collection('users').findOne({email: email}, (err, res) => {
-    console.log(res)
-    callback("AYO")
+    if (res == null) {
+      console.log("email available")
+      let user = {
+        email: email,
+        password: password,
+        username: username,
+        first_name: first_name,
+        last_name: last_name,
+      }
+      db.collection('users').insertOne(user, (err, res) => {
+        assert.equal(err, null);
+        generateSession(db, user._id, null, callback)
+      })
+    }
+    else {
+      console.log("email unavailable")
+      callback({})
+    }
   })
 }
 
@@ -84,15 +101,17 @@ router.post('/register', function(req, res, next) {
 
   const email = req.body.email;
   const password = req.body.password;
+  const username = req.body.username;
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
 
   MongoClient.connect(url, (err, client) => {
     assert.equal(null, err);
     console.log("Connected successfully to server");
 
     const db = client.db(dbName);
-    let r = registerUser(db, email, password, (results) => {
+    let r = registerUser(db, email, password, username, first_name, last_name, (results) => {
       client.close();
-      console.log(results);
       res.send(results);
     })
   });

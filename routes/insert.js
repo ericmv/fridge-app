@@ -33,6 +33,25 @@ const insertItem = (db, user, category, name, qty, unit, exp, callback) => {
   .catch()
 }
 
+const insertFridge = (db, user, callback) => {
+  const user_id = ObjectID(user);
+  db.collection('users').findOne({_id: user_id})
+  .then((res) => {
+    let fridge = {
+      contents: [],
+      owners: [{user_id: user_id, name: res.name}]
+    }
+    let user_cursor = db.collection('fridges').insertOne(fridge)
+    .then((results) => {
+      callback(results)
+    })
+  })
+  .catch((err) => {
+    callback(null)
+  })
+
+}
+
 
 
 /* GET users listing. */
@@ -58,5 +77,20 @@ router.post('/item', function(req, res, next) {
   });
 });
 
+router.post('/fridge', function(req, res, next) {
+  const user = req.body.user;
+
+  MongoClient.connect(url, (err, client) => {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+
+    const db = client.db(dbName);
+    let r = insertFridge(db, user, (results) => {
+      client.close();
+      console.log(results);
+      res.send(results);
+    })
+  });
+});
 
 module.exports = router;
