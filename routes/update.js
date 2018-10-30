@@ -4,8 +4,7 @@ var router = express.Router();
 const MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID
 const assert = require('assert');
-// const url = 'mongodb://localhost:27017'
-const url = 'mongodb+srv://ericvu:dhdkmvl5@eric-dev-cluster-zlepn.mongodb.net/fridgedb?retryWrites=true'
+const url = 'mongodb://localhost:27017'
 
 const dbName = 'fridgedb'
 
@@ -27,8 +26,8 @@ const update = (db, fridge, item_id, item, callback) => {
     assert.equal(err, null);
     callback(res);
   });
-    
-  
+
+
 }
 
 /* GET users listing. */

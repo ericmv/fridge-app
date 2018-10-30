@@ -5,8 +5,7 @@ const MongoClient = require('mongodb').MongoClient;
 ObjectID = require('mongodb').ObjectID
 const assert = require('assert');
 
-// const url = 'mongodb://localhost:27017'
-const url = 'mongodb+srv://ericvu:dhdkmvl5@eric-dev-cluster-zlepn.mongodb.net/fridgedb?retryWrites=true'
+const url = 'mongodb://localhost:27017'
 
 
 const dbName = 'fridgedb'
@@ -31,6 +30,16 @@ const insertItem = (db, user, category, name, qty, unit, exp, callback) => {
     callback("success");
   })
   .catch()
+}
+
+const insertUser = (db, user_id, user_first_name, fridge_id, callback) => {
+  const owner = {
+    user_id: user_id,
+    name: user_first_name
+  }
+
+  let categoryresults = db.collection('fridges').updateOne({_id: fridge_id}, {$push: {owners: owner}});
+  callback("success");
 }
 
 const insertFridge = (db, user, callback) => {
